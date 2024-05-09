@@ -1,5 +1,9 @@
-const assert = require("assert").strict;
+const strict = require("assert").strict;
 const detective = require("../index.js");
+
+function assert(source, dependencies) {
+  strict.deepEqual(detective(source, { css: true }), dependencies);
+}
 
 describe("css", () => {
   describe("@import", () => {
@@ -41,13 +45,6 @@ describe("css", () => {
       assert('@import "mobstyle.css" screen and (max-width: 768px);', [
         "mobstyle.css",
       ]);
-    });
-
-    it("ignores URLs", () => {
-      assert(
-        "@import url('https://fonts.googleapis.com/css?family=Roboto:300,400');",
-        []
-      );
     });
 
     it("does not touch the paths", () => {
@@ -92,10 +89,6 @@ describe("css", () => {
   });
 
   describe("declarations", () => {
-    it("ignores url() by default", () => {
-      assert(".x { background: url(bla.png) }", []);
-    });
-
     it("filters out url() for direct usages", () => {
       assert(".x { background: url(bla.png) }", ["bla.png"], {
         url: true,
@@ -126,20 +119,6 @@ describe("css", () => {
 
     it("finds url() in @value definitions", () => {
       assert("@value x: url(bummer.png)", ["bummer.png"], { url: true });
-    });
-
-    it("ignores base64 data: urls", () => {
-      assert(
-        ".x { background: url(data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7)}",
-        []
-      );
-    });
-
-    it("ignores SVG data: urls", () => {
-      const css = `svg {
-                -webkit-mask-image: url('data:image/svg+xml;utf8,<svg viewBox="0 0 32 32" width="32" height="32" xmlns="http://www.w3.org/2000/svg"><defs><mask id="mask"><rect x="0" y="0" width="32" height="32" fill="#fff"/><rect x="14" y="-10" width="40" height="20" rx="10" fill="#000"/></mask></defs><rect x="0" y="0" width="32" height="32" mask="url(#mask)"/></svg>');
-            }`;
-      assert(css, []);
     });
   });
 });

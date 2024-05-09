@@ -1,16 +1,18 @@
 // TODO: mini parser
 
+const Regexp1 = /(?:require|import|url)\(['"`]([^'"]+)['"`]\)/g;
+const Regexp2 = /(?:\@import|from|import)\s+['"]([^'"]+)['"]/g;
+const Regexp3 = /(?:url)\(([^'"]+)\)/g;
+const Regexp4 = /(?:[sS][rR][cC]=)['"]([^'"]+)['"]/g;
+
+const validPathRegexp = /^[^'"\s]+$/;
+
 function getDependencies(code, options) {
   if (!code) {
     return [];
   }
 
   const dependencySet = new Set();
-
-  const Regexp1 = /(?:require|import|url)\(['"`]([^'"]+)['"`]\)/g;
-  const Regexp2 = /(?:\@import|from|import)\s+['"]([^'"]+)['"]/g;
-  const Regexp3 = /(?:url)\(([^'"]+)\)/g;
-  const Regexp4 = /(?:[sS][rR][cC]=)['"]([^'"]+)['"]/g;
 
   for (const match of code.matchAll(Regexp1)) {
     dependencySet.add(match[1]);
@@ -32,7 +34,11 @@ function getDependencies(code, options) {
     }
   }
 
-  return [...dependencySet];
+  const dependencies = [...dependencySet];
+
+  const validDependencies = dependencies.filter((d) => validPathRegexp.test(d));
+
+  return validDependencies;
 }
 
 module.exports = getDependencies;
