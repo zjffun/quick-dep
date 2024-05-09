@@ -1,6 +1,6 @@
 {
   "name": "quick-dep",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "main": "index.js",
   "repository": "git@github.com:zjffun/quick-dep.git",
   "author": "Jufeng Zhang <zjffun@gmail.com>",
